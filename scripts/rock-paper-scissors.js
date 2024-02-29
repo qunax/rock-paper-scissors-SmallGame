@@ -8,10 +8,30 @@ const scores = JSON.parse(localStorage.getItem('scores')) || {
   draws: 0
 };
 
-let isAutoPlaying = false;
-let intervalId;
 
 
+document.querySelector('.js-rock-button').addEventListener('click', () => makeRPSMove(1));
+
+document.querySelector('.js-paper-button').addEventListener('click', () => makeRPSMove(2));
+
+document.querySelector('.js-scissors-button').addEventListener('click', () => makeRPSMove(3));
+
+document.body.addEventListener('keydown', (event) => {
+  switch(event.key){
+    case 'r':
+    case 'R':
+      makeRPSMove(1)
+      break;
+    case 'p':
+    case 'P':
+      makeRPSMove(2)
+      break;
+    case 's':
+    case 'S':
+      makeRPSMove(3)
+      break;
+  }
+});
 
 function makeRPSMove(yourMove){
   console.log('Game start.');
@@ -47,13 +67,17 @@ function makeRPSMove(yourMove){
 }
 
 
+document.querySelector('.js-autoplay-button').addEventListener('click', () => autoPlay());
+
+let isAutoPlaying = false;
+let intervalId;
 
 function autoPlay(){
   const autoplayButtonElement = document.querySelector('.js-autoplay-button');
 
 
   if(!isAutoPlaying){
-    intervalId = setInterval(function(){
+    intervalId = setInterval(() => {
       const playerAutoMove = getRandomIntInclusive(1, 3);
       makeRPSMove(playerAutoMove);
     }, 2000);
@@ -70,6 +94,7 @@ function autoPlay(){
 }
 
 
+document.querySelector('.js-reset-button').addEventListener('click', () => resetScores());
 
 function resetScores(){
   scores.wins = 0;
