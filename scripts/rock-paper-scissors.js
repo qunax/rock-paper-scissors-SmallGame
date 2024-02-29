@@ -1,64 +1,96 @@
 const variants = {1: 'rock',
-                        2: 'paper',
-                        3: 'scissors'};
-      
-      const scores = JSON.parse(localStorage.getItem('scores')) || {
-        wins: 0,
-        losses: 0,
-        draws: 0
-      };
+                  2: 'paper',
+                  3: 'scissors'};
+
+const scores = JSON.parse(localStorage.getItem('scores')) || {
+  wins: 0,
+  losses: 0,
+  draws: 0
+};
+
+let isAutoPlaying = false;
+let intervalId;
 
 
-      function makeRPSMove(yourMove){
-        console.log('Game start.');
 
-        const computerMove = getRandomIntInclusive(1, 3);
-        console.log('Your move: ' + variants[yourMove]);
-        console.log('Computer move: ' + variants[computerMove]);
+function makeRPSMove(yourMove){
+  console.log('Game start.');
 
-        let result;
-        if(yourMove === computerMove){
-          scores.draws++;
-          result = 'Draw';
-        }
-        else if(yourMove === (computerMove - 1) % 3){
-          scores.losses++;
-          result = 'You\'ve lost';
-        }
-        else{
-          scores.wins++;
-          result = 'You won';
-        }
+  const computerMove = getRandomIntInclusive(1, 3);
+  console.log('Your move: ' + variants[yourMove]);
+  console.log('Computer move: ' + variants[computerMove]);
 
-        localStorage.setItem('scores', JSON.stringify(scores));
+  let result;
+  if(yourMove === computerMove){
+    scores.draws++;
+    result = 'Draw';
+  }
+  else if(yourMove === (computerMove - 1) % 3){
+    scores.losses++;
+    result = 'You\'ve lost';
+  }
+  else{
+    scores.wins++;
+    result = 'You won';
+  }
 
-        const lastGameScoreElem = document.querySelector('.js-last-game');
-        lastGameScoreElem.innerHTML = `${result}! (You) <img src="Resourses/${variants[yourMove]}-emoji.png" class="move-icon"> VS. <img src="Resourses/${variants[computerMove]}-emoji.png" class="move-icon"> (Computer).`
+  localStorage.setItem('scores', JSON.stringify(scores));
 
-        const scoresTextElem = document.querySelector('.js-scores');
-        updateScoreElement();
+  const lastGameScoreElem = document.querySelector('.js-last-game');
+  lastGameScoreElem.innerHTML = `${result}! (You) <img src="Resourses/${variants[yourMove]}-emoji.png" class="move-icon"> VS. <img src="Resourses/${variants[computerMove]}-emoji.png" class="move-icon"> (Computer).`
 
-        console.log(result);
-        console.log(scores);
-      }
+  const scoresTextElem = document.querySelector('.js-scores');
+  updateScoreElement();
 
-      function resetScores(){
-        scores.wins = 0;
-        scores.losses = 0;
-        scores.draws = 0;
-        localStorage.removeItem('scores');
-
-        document.querySelector('.js-last-game').textContent = 'Scores were reset.';
-        updateScoreElement();
-      }
-
-      function updateScoreElement(){
-        document.querySelector('.js-scores').textContent = `Wins: ${scores.wins}, Losses: ${scores.losses}, Draws: ${scores.draws}`;
-      }
+  console.log(result);
+  console.log(scores);
+}
 
 
-      function getRandomIntInclusive(min, max) {
-        const minCeiled = Math.ceil(min);
-        const maxFloored = Math.floor(max);
-        return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled); // The maximum is inclusive and the minimum is inclusive
+
+function autoPlay(){
+  const autoplayButtonElement = document.querySelector('.js-autoplay-button');
+
+
+  if(!isAutoPlaying){
+    intervalId = setInterval(function(){
+      const playerAutoMove = getRandomIntInclusive(1, 3);
+      makeRPSMove(playerAutoMove);
+    }, 2000);
+
+    isAutoPlaying = true;
+    autoplayButtonElement.textContent = 'Stop Autoplaying';
+  }
+  else{
+    clearInterval(intervalId);
+    isAutoPlaying = false;
+    autoplayButtonElement.textContent = 'Start Autoplaying';
+  }
+  
+}
+
+
+
+function resetScores(){
+  scores.wins = 0;
+  scores.losses = 0;
+  scores.draws = 0;
+  localStorage.removeItem('scores');
+
+  document.querySelector('.js-last-game').textContent = 'Scores were reset.';
+  updateScoreElement();
+}
+
+
+
+function updateScoreElement(){
+  document.querySelector('.js-scores').textContent = `Wins: ${scores.wins}, Losses: ${scores.losses}, Draws: ${scores.draws}`;
+}
+
+
+
+function getRandomIntInclusive(min, max) {
+  const minCeiled = Math.ceil(min);
+  const maxFloored = Math.floor(max);
+  return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled); // The maximum is inclusive and the minimum is inclusive
 }
